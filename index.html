@@ -1440,17 +1440,15 @@
         });
 
         // Dynamic stats counter with enhanced animation
-        function animateCounter(element, target, duration = 3000) {
+        function animateCounter(element, target, suffix = '', duration = 3000) {
             let start = 0;
             const increment = target / (duration / 16);
             const timer = setInterval(() => {
                 start += increment;
                 if (start >= target) {
-                    const suffix = element.textContent.includes('+') ? '+' : (element.textContent.includes('K') ? 'K+' : '');
                     element.textContent = target + suffix;
                     clearInterval(timer);
                 } else {
-                    const suffix = element.textContent.includes('+') ? '+' : (element.textContent.includes('K') ? 'K+' : '');
                     element.textContent = Math.floor(start) + suffix;
                 }
             }, 16);
@@ -1464,9 +1462,17 @@
                     statNumbers.forEach((stat, index) => {
                         setTimeout(() => {
                             const text = stat.textContent;
-                            const number = parseInt(text.replace(/\D/g, ''));
-                            stat.textContent = '0';
-                            animateCounter(stat, number, 2000);
+                            let suffix = '';
+                            let number = parseInt(text.replace(/\D/g, ''));
+                            
+                            if (text.includes('K+')) {
+                                suffix = 'K+';
+                            } else if (text.includes('+')) {
+                                suffix = '+';
+                            }
+                            
+                            stat.textContent = '0' + suffix;
+                            animateCounter(stat, number, suffix, 2000);
                         }, index * 200);
                     });
                     statsObserver.unobserve(entry.target);
